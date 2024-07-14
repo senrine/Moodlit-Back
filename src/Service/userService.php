@@ -15,12 +15,29 @@ class userService
     public function registerUser($data) : array
     {
         $user = new User();
+
         $user->setName($data['name']);
-        $user->setPassword($data['password']);
         $user->setEmail($data['email']);
+
+        $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
+        $user->setPassword($hashedPassword);
+
         $this->userRepository->save($user);
         return $user->serialize();
     }
 
-    public function loginUser(#[CurrentUser] ?User $user) : array{ return $user->serialize();}
+    public function getUsers() : array
+    {
+        $users = $this->userRepository->findAll();
+        $serializedUsers = [];
+        foreach ($users as $user) {
+            $serializedUsers[] = $user->serialize();
+        }
+        return $serializedUsers;
+    }
+
+    public function getUserById(int $id) : array
+    {
+        return $this->userRepository->find($id)->serialize();
+    }
 }

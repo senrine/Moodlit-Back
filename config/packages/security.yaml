@@ -18,8 +18,8 @@ security:
       json_login:
         check_path: app_user_login
       logout:
-        path: app_user_logouts
-        target: app_home
+        path: app_user_logout
+        target: app_user_logout
 
       # activate different ways to authenticate
       # https://symfony.com/doc/current/security.html#firewalls-authentication

@@ -2,18 +2,29 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
+use App\Service\userService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 class SecurityController extends AbstractController
 {
-    #[Route('/security', name: 'app_security')]
-    public function index(): JsonResponse
+    private UserService $userService;
+    public function __construct(UserService $userService)
     {
-        return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/SecurityController.php',
-        ]);
+        $this->userService = $userService;
     }
+    #[Route('/register', name: 'register', methods: ['POST'])]
+    public function register(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        return $this->json($this->userService->registerUser($data));
+    }
+
+    #[Route('/logout', name: 'app_user_logout', methods: ["POST"])]
+    public function logout(): void
+    {}
 }

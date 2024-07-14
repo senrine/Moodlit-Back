@@ -13,18 +13,23 @@ services:
       - ./var/logs/php/:/var/log/php:delegated
     depends_on:
       - postgresdb
+    command: >
+      sh -c "wait-for-it postgresdb:5432 --
+             php bin/console doctrine:database:create --if-not-exists &&
+             php bin/console doctrine:schema:update --force &&
+             apache2-foreground"
 
   postgresdb:
     container_name: moodlit_back_postgres
     restart: on-failure
     image: postgres:15
     expose:
-      - 3306
+      - 5432
     ports:
-      - 3306:3306
+      - 5432:5432
     environment:
-      MYSQL_ROOT_PASSWORD: postgres
-      MYSQL_DATABASE: postgres
-      MYSQL_USER: postgres
-      MYSQL_PASSWORD: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
       TZ: Europe/Paris

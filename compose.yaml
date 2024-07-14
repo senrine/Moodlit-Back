@@ -1,0 +1,30 @@
+services:
+  php:
+    container_name: moodlit_back_php
+    restart: on-failure
+    build: ./
+    image: moodlit_back_php
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./:/var/www
+      - ./.docker/var/logs/apache/:/var/log/apache2:delegated
+      - ./var/logs/php/:/var/log/php:delegated
+    depends_on:
+      - postgresdb
+
+  postgresdb:
+    container_name: moodlit_back_postgres
+    restart: on-failure
+    image: postgres:15
+    expose:
+      - 3306
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: postgres
+      MYSQL_DATABASE: postgres
+      MYSQL_USER: postgres
+      MYSQL_PASSWORD: postgres
+      TZ: Europe/Paris

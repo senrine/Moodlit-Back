@@ -38,6 +38,10 @@ class userService
 
     public function getUserById(int $id) : array
     {
-        return $this->userRepository->find($id)->serialize();
+        $user= $this->userRepository->find($id)->serialize();
+        if(!$user) {
+            throw new \InvalidArgumentException('User not found');
+        }
+        return $user;
     }
 }

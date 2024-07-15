@@ -35,6 +35,23 @@ class DailyJournalRepository extends ServiceEntityRepository
         $this->entityManager->remove($journal);
         $this->entityManager->flush();
     }
+
+    public function getWeekJournal(\DateTimeInterface $currentDate, int $editor_id): array
+    {
+        $endDate = clone $currentDate;
+        $startDate = (clone $currentDate)->modify('-6 days');
+
+        return $this->createQueryBuilder('d')
+            ->andWhere('d.editor = :editor_id')
+            ->andWhere('d.created_at >= :startDate')
+            ->andWhere('d.created_at <= :endDate')
+            ->setParameter('editor_id', $editor_id)
+            ->setParameter('startDate', $startDate->format('Y-m-d 00:00:00'))
+            ->setParameter('endDate', $endDate->format('Y-m-d 23:59:59'))
+            ->orderBy('d.created_at', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 //    /**
 //     * @return DailyJournal[] Returns an array of DailyJournal objects
 //     */

@@ -57,17 +57,28 @@ class DailyJournalService
     public function getJournalById(int $id): array
     {
         $journal = $this->dailyJournalRepository->find($id);
+        if(!$journal) {
+            throw new \InvalidArgumentException('Journal not found');
+        }
         return $journal->serialize();
     }
 
     public function updateJournal(int $id, array $data): array
     {
         $journal = $this->dailyJournalRepository->find($id);
+        if(!$journal) {
+            throw new \InvalidArgumentException('Journal not found');
+        }
         if(array_key_exists('title', $data)){
-            $journal->setTitle($data['title']);
+            if($journal->getTitle() !== $data['title']){
+                $journal->setTitle($data['title']);
+            }
+
         }
         if(array_key_exists('content', $data)){
-            $journal->setContent($data['content']);
+            if($journal->getContent() !== $data['content']){
+                $journal->setContent($data['content']);
+            }
         }
         $this->dailyJournalRepository->save($journal);
 

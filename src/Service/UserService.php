@@ -3,16 +3,25 @@
 namespace App\Service;
 
 use App\Entity\User;
+use App\Exception\ValidationException;
 use App\Repository\UserRepository;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class userService
+class UserService
 {
     private UserRepository $userRepository;
-    public function __construct(UserRepository $userRepository)
+    private ValidatorInterface $validator;
+    public function __construct(UserRepository $userRepository, ValidatorInterface $validator)
     {
         $this->userRepository = $userRepository;
+        $this->validator = $validator;
     }
-    public function registerUser($data) : array
+
+    /**
+     * @throws ValidationException
+     */
+    public function registerUser(array $data) : array
     {
         $user = new User();
 
@@ -21,6 +30,12 @@ class userService
 
         $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
         $user->setPassword($hashedPassword);
+
+        $errors = $this->validator->validate($user);
+
+        if (count($errors) > 0) {
+            throw new ValidationException($errors);
+        }
 
         $this->userRepository->save($user);
         return $user->serialize();

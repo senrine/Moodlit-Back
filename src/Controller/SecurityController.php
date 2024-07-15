@@ -3,7 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Service\userService;
+use App\Exception\ValidationException;
+use App\Service\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,6 +18,10 @@ class SecurityController extends AbstractController
     {
         $this->userService = $userService;
     }
+
+    /**
+     * @throws ValidationException
+     */
     #[Route('/register', name: 'app_user_register', methods: ["POST"])]
     public function register(Request $request): JsonResponse
     {

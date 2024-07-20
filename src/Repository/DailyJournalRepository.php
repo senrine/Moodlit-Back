@@ -18,6 +18,7 @@ use Doctrine\Persistence\ManagerRegistry;
 class DailyJournalRepository extends ServiceEntityRepository
 {
     private EntityManagerInterface $entityManager;
+
     public function __construct(ManagerRegistry $registry, EntityManagerInterface $entityManager)
     {
         parent::__construct($registry, DailyJournal::class);
@@ -51,6 +52,23 @@ class DailyJournalRepository extends ServiceEntityRepository
             ->orderBy('d.created_at', 'ASC')
             ->getQuery()
             ->getResult();
+    }
+
+    public function getDailyJournalsByDate(\DateTimeInterface $date, int $editor_id): DailyJournal | null
+    {
+        $startDate = clone $date;
+        $endDate = clone $date;
+        $endDate->modify('+1 day');
+        return $this->createQueryBuilder('d')
+            ->andWhere('d.created_at >= :startDate')
+            ->andWhere('d.created_at < :endDate')
+            ->andWhere('d.editor = :editor_id')
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate)
+            ->setParameter('editor_id', $editor_id)
+            ->orderBy('d.created_at', 'ASC')
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 //    /**
 //     * @return DailyJournal[] Returns an array of DailyJournal objects

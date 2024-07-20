@@ -47,4 +47,20 @@ class DailyJournalController extends AbstractController
         return $this->json(['journal'=>$this->dailyJournalService->updateJournal($id, $data)]);
     }
 
+    /**
+     * @throws \Exception
+     */
+    #[Route('/getJournalsByDate/{id}', name: 'app_daily_journal_get_by_date', methods: ['POST'])]
+    public function getJournalsByDate(Request $request, int $id): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        return $this->json(['journals'=>$this->dailyJournalService->getJournalsByDate($data, $id)]);
+    }
+
+    #[Route('/getDatesAndScores/{editor_id}', name: 'app_daily_journal_get_dates_and_scores', methods: ['GET'])]
+    public function getDatesAndScores(int $editor_id): JsonResponse
+    {
+        return $this->json(['datesAndScores'=>$this->dailyJournalService->getDatesAndScores($editor_id)]);
+    }
+
 }
